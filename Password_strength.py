@@ -1,5 +1,7 @@
 import streamlit as st
 import re
+import random
+import string
 
 st.set_page_config(page_title="Password Strength Checker", page_icon="🔒")
 
@@ -41,10 +43,10 @@ if st.button("Check Strength"):
         else:
             feedback.append("❌ Password should contain at least one digit.")
 
-        if re.search(r"[!@#$%^&*]", password):
+        if re.search(r"[!@#$%^&*()=_|\/?.>,<';:]", password):
             score += 1
         else:
-            feedback.append("❌ Password should contain at least one special character (!@#$%^&*).")
+            feedback.append("❌ Password should contain at least one special character (!@#$%^&*()=_|\/?.>,<';:).")
 
         if score == 4:
             st.success("✔ Your Password is strong! 👍")
@@ -59,3 +61,27 @@ if st.button("Check Strength"):
                 st.write(item)
     else:
         st.warning("Please enter a password first.")
+
+
+def generate_password(length, use_number, use_special):
+    characters = string.ascii_letters
+    if use_number:
+        characters += string.digits
+    if use_special:
+        characters += string.punctuation
+    
+    return ''.join(random.choice(characters) for _ in range(length))
+
+st.markdown("# 🔒 Generate a Strong Password")
+
+length = st.slider("Select Password Length:", min_value=8, max_value=32, value=12)
+use_number = st.checkbox("Include Numbers", value=True)
+use_special = st.checkbox("Include Special Characters", value=True)
+
+if st.button("Generate Password"):
+    generated_password = generate_password(length, use_number, use_special)
+    st.success(f"Your Generated Password: `{generated_password}`")
+
+if st.button("Regenerate Password"):
+    regenerated_password = generate_password(length, use_number, use_special)
+    st.success(f"Your New Password: `{regenerated_password}`")
